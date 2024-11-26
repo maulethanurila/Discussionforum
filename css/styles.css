@@ -30,10 +30,9 @@ body {
     color: #007BFF;
     border: none;
     padding: 10px 15px;
-    border-radius: 8px;
+    border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 #menu-button:hover {
@@ -44,14 +43,15 @@ body {
 /* Выпадающее меню */
 #menu-dropdown {
     display: none;
-    position: absolute;
-    top: 50px; /* Расположение ниже кнопки */
-    right: 0;
+    position: fixed;
+    top: 50px;
+    right: 10px;
     background-color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     overflow: hidden;
     width: 200px;
+    z-index: 1001;
 }
 
 #menu-dropdown a {
@@ -60,7 +60,6 @@ body {
     text-decoration: none;
     color: #333;
     border-bottom: 1px solid #f4f4f9;
-    font-size: 16px;
 }
 
 #menu-dropdown a:last-child {
@@ -71,7 +70,7 @@ body {
     background-color: #f4f4f9;
 }
 
-/* Заголовок */
+/* Шапка и основная структура */
 h1 {
     text-align: center;
     font-size: 28px;
@@ -79,7 +78,6 @@ h1 {
     margin-bottom: 20px;
 }
 
-/* Форма */
 form {
     display: flex;
     flex-direction: column;
@@ -121,7 +119,6 @@ button:active {
     transform: translateY(0);
 }
 
-/* Навигация */
 nav {
     display: flex;
     justify-content: center;
@@ -156,5 +153,9 @@ nav a:hover {
 
     button {
         font-size: 16px;
+    }
+
+    #menu-dropdown {
+        width: 150px;
     }
 }

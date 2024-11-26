@@ -1,0 +1,8 @@
+# Запрет прямого доступа к папке
+Order Deny,Allow
+Deny from all
+
+# Разрешение только изображений
+<FilesMatch "\.(jpg|jpeg|png|gif)$">
+    Allow from all
+</FilesMatch>
