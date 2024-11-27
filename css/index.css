@@ -1,0 +1,136 @@
+/* Общие стили */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f9f4; /* Светло-зеленый фон */
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+header {
+    background-color: #2c8d48; /* Темно-зеленый */
+    color: #ffffff;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: center; /* Центрируем заголовок */
+    align-items: center;
+    position: relative;
+    width: 100%;
+}
+
+header h1 {
+    font-size: 32px; /* Сделаем заголовок больше */
+    margin: 0;
+    text-align: center; /* Центрируем текст */
+    width: 100%; /* Чтобы заголовок занимал всю ширину */
+}
+
+/* Стиль для контейнера меню, чтобы оно было справа */
+.menu-container {
+    position: absolute;
+    right: 20px; /* Меню будет справа */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#menu-button {
+    background: transparent;
+    color: #ffffff;
+    border: 2px solid #ffffff;
+    border-radius: 5px;
+    padding: 5px 15px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#menu-button:hover {
+    background-color: #ffffff;
+    color: #2c8d48;
+}
+
+#menu-dropdown {
+    display: none;
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    width: 200px;
+    z-index: 1000;
+}
+
+#menu-dropdown a {
+    display: block;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: #2c8d48;
+    border-bottom: 1px solid #f4f4f9;
+    font-size: 14px;
+}
+
+#menu-dropdown a:last-child {
+    border-bottom: none;
+}
+
+#menu-dropdown a:hover {
+    background-color: #f4f4f9;
+}
+
+/* Основной контейнер */
+.container {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    color: #2c8d48;
+    margin-bottom: 15px;
+}
+
+button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #2c8d48;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+button:hover {
+    background-color: #267a3b;
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* Горячие темы */
+#hot-topics {
+    margin-top: 20px;
+}
+
+#hot-topics .button {
+    margin-top: 10px;
+    background-color: #2c8d48;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    display: inline-block;
+}
+
+#hot-topics .button:hover {
+    background-color: #267a3b;
+}

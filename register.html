@@ -3,22 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/styles.css">
     <title>Регистрация</title>
+    <link rel="stylesheet" href="css/auth-styles.css">
 </head>
 <body>
-<nav>
-    <a href="index.html">Главная</a>
-    <a href="login.html">Вход</a>
-</nav>
-<div class="container">
-    <h1>Регистрация</h1>
-    <form method="POST" action="register.php">
-        <input type="text" name="username" placeholder="Имя пользователя" required>
-        <input type="email" name="email" placeholder="Электронная почта" required>
-        <input type="password" name="password" placeholder="Пароль" required>
-        <button type="submit">Зарегистрироваться</button>
-    </form>
-</div>
+    <div class="container">
+        <h1>Регистрация</h1>
+        <form action="register.php" method="POST">
+            <input type="text" name="username" placeholder="Имя пользователя" required>
+            <input type="email" name="email" placeholder="Электронная почта" required>
+            <input type="password" name="password" placeholder="Пароль" required>
+            <button type="submit">Зарегистрироваться</button>
+        </form>
+        <p>Уже есть аккаунт? <a href="login.html">Вход</a></p>
+    </div>
 </body>
 </html>

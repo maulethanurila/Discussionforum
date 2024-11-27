@@ -85,7 +85,7 @@ input[type="text"], input[type="password"], input[type="file"] {
 }
 
 input:focus {
-    border-color: #0095f6;
+    border-color: #0ed259;
     outline: none;
 }
 
@@ -93,7 +93,7 @@ button {
     width: 100%;
     max-width: 400px;
     padding: 12px;
-    background-color: #0095f6;
+    background-color: #0ed259 !important; /* Добавлен !important */
     color: white;
     font-size: 16px;
     font-weight: bold;
@@ -104,8 +104,9 @@ button {
 }
 
 button:hover {
-    background-color: #007bb5;
+    background-color: #0ed259 !important; /* Добавлен !important */
 }
+
 
 /* Адаптивность */
 @media (max-width: 600px) {

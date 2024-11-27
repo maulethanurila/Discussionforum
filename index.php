@@ -14,7 +14,7 @@ if (!isset($_SESSION['user_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Главная страница</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
     <header>
@@ -38,21 +38,23 @@ if (!isset($_SESSION['user_id'])) {
             <a href="add_hot_topic.php" class="button">Добавить новую тему</a>
         </section>
     </main>
+
+    <script>
+        // Логика для выпадающего меню
+        const menuButton = document.getElementById('menu-button');
+        const menuDropdown = document.getElementById('menu-dropdown');
+
+        menuButton.addEventListener('click', () => {
+            // Переключаем видимость выпадающего меню
+            menuDropdown.style.display = menuDropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        window.addEventListener('click', (e) => {
+            // Закрываем меню, если клик не был по кнопке или выпадающему меню
+            if (!menuButton.contains(e.target) && !menuDropdown.contains(e.target)) {
+                menuDropdown.style.display = 'none';
+            }
+        });
+    </script>
 </body>
-<script>
-    // Логика для выпадающего меню
-    const menuButton = document.getElementById('menu-button');
-    const menuDropdown = document.getElementById('menu-dropdown');
-
-    menuButton.addEventListener('click', () => {
-        menuDropdown.style.display = menuDropdown.style.display === 'block' ? 'none' : 'block';
-    });
-
-    window.addEventListener('click', (e) => {
-        if (!menuButton.contains(e.target) && !menuDropdown.contains(e.target)) {
-            menuDropdown.style.display = 'none';
-        }
-    });
-</script>
 </html>
-
