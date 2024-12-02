@@ -1,7 +1,86 @@
 <?php
 include 'includes/db.php';
 
-// Проверяем, была ли отправлена форма
+// Функция для изменения размера изображения
+function resizeImage($sourcePath, $destinationPath, $maxWidth, $maxHeight) {
+    list($width, $height, $type) = getimagesize($sourcePath);
+    $ratio = $width / $height;
+
+    if ($width > $maxWidth || $height > $maxHeight) {
+        if ($ratio > 1) {
+            $newWidth = $maxWidth;
+            $newHeight = $maxWidth / $ratio;
+        } else {
+            $newHeight = $maxHeight;
+            $newWidth = $maxHeight * $ratio;
+        }
+
+        $image_p = imagecreatetruecolor($newWidth, $newHeight);
+
+        switch ($type) {
+            case IMAGETYPE_JPEG:
+                $image = imagecreatefromjpeg($sourcePath);
+                break;
+            case IMAGETYPE_PNG:
+                $image = imagecreatefrompng($sourcePath);
+                break;
+            case IMAGETYPE_GIF:
+                $image = imagecreatefromgif($sourcePath);
+                break;
+            default:
+                return false;
+        }
+
+        imagecopyresampled($image_p, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+
+        switch ($type) {
+            case IMAGETYPE_JPEG:
+                imagejpeg($image_p, $destinationPath, 85);
+                break;
+            case IMAGETYPE_PNG:
+                imagepng($image_p, $destinationPath);
+                break;
+            case IMAGETYPE_GIF:
+                imagegif($image_p, $destinationPath);
+                break;
+        }
+
+        return true;
+    } else {
+        return copy($sourcePath, $destinationPath);
+    }
+}
+
+// Удаление темы
+if (isset($_GET['delete'])) {
+    $postId = intval($_GET['delete']);
+    $stmt = $conn->prepare("SELECT image, file, video FROM posts WHERE id = ?");
+    $stmt->execute([$postId]);
+    $post = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($post) {
+        // Удаляем файлы
+        if (!empty($post['image']) && file_exists($post['image'])) {
+            unlink($post['image']);
+        }
+        if (!empty($post['file']) && file_exists($post['file'])) {
+            unlink($post['file']);
+        }
+        if (!empty($post['video']) && file_exists($post['video'])) {
+            unlink($post['video']);
+        }
+
+        // Удаляем запись из базы данных
+        $stmt = $conn->prepare("DELETE FROM posts WHERE id = ?");
+        $stmt->execute([$postId]);
+
+        echo "Тема успешно удалена!";
+    } else {
+        echo "Тема не найдена!";
+    }
+}
+
+// Добавление новой темы
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['title']);
     $content = trim($_POST['content']);
@@ -10,14 +89,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $uploadDir = 'uploads/';
     $imagePath = null;
     $filePath = null;
+    $videoPath = null;
 
     // Обрабатываем загрузку фото
     if (!empty($_FILES['image']['name'])) {
         $imageName = basename($_FILES['image']['name']);
-        $imagePath = $uploadDir . time() . '_' . $imageName;
+        $tempImagePath = $uploadDir . time() . '_' . $imageName;
+        $imagePath = $uploadDir . 'resized_' . time() . '_' . $imageName;
 
-        if (move_uploaded_file($_FILES['image']['tmp_name'], $imagePath)) {
-            echo "Фото загружено: $imagePath<br>";
+        if (move_uploaded_file($_FILES['image']['tmp_name'], $tempImagePath)) {
+            // Изменение размера изображения
+            if (!resizeImage($tempImagePath, $imagePath, 800, 600)) {
+                $imagePath = null; // Если произошла ошибка, не сохраняем путь
+            }
+            unlink($tempImagePath); // Удаляем оригинал
         } else {
             echo "Ошибка загрузки фото.<br>";
         }
@@ -35,13 +120,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    // Обрабатываем загрузку видео
+    if (!empty($_FILES['video']['name'])) {
+        $videoName = basename($_FILES['video']['name']);
+        $videoPath = $uploadDir . time() . '_' . $videoName;
+
+        if (move_uploaded_file($_FILES['video']['tmp_name'], $videoPath)) {
+            echo "Видео загружено: $videoPath<br>";
+        } else {
+            echo "Ошибка загрузки видео.<br>";
+        }
+    }
+ 
     // Вставляем данные в базу данных
     try {
         $stmt = $conn->prepare("
-            INSERT INTO posts (title, content, image, file, user_id)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO posts (title, content, image, file, video, user_id)
+            VALUES (?, ?, ?, ?, ?, ?)
         ");
-        $stmt->execute([$title, $content, $imagePath, $filePath, 1]); // user_id = 1 (замените на текущего пользователя)
+        $stmt->execute([$title, $content, $imagePath, $filePath, $videoPath, 1]); // user_id = 1 (замените на текущего пользователя)
 
         echo "Горячая тема добавлена успешно!";
     } catch (PDOException $e) {
@@ -74,9 +171,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <label for="file">Добавить файл</label>
             <input type="file" id="file" name="file">
             
+            <label for="video">Добавить видео</label>
+            <input type="file" id="video" name="video" accept="video/*">
+
             <button type="submit">Добавить тему</button>
         </form>
+        
+        <h2>Список горячих тем</h2>
+        <?php
+        $stmt = $conn->query("SELECT id, title FROM posts ORDER BY id DESC");
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            echo '<div>';
+            echo '<p>' . htmlspecialchars($row['title']) . '</p>';
+            echo '<a href="add_hot_topic.php?delete=' . $row['id'] . '" onclick="return confirm(\'Удалить эту тему?\');">Удалить</a>';
+            echo '</div>';
+        }
+        ?>
     </div>
 </body>
 </html>
-
