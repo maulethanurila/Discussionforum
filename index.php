@@ -136,115 +136,124 @@ $stmt->execute();
     </footer>
 
     <script>
-        // Логика для выпадающего меню
-        const menuButton = document.getElementById('menu-button');
-        const menuDropdown = document.getElementById('menu-dropdown');
+    // Логика для выпадающего меню
+    const menuButton = document.getElementById('menu-button');
+    const menuDropdown = document.getElementById('menu-dropdown');
 
-        menuButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            menuDropdown.style.display = menuDropdown.style.display === 'block' ? 'none' : 'block';
-        });
+    menuButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        menuDropdown.style.display = menuDropdown.style.display === 'block' ? 'none' : 'block';
+    });
 
-        window.addEventListener('click', (e) => {
-            if (!menuButton.contains(e.target) && !menuDropdown.contains(e.target)) {
-                menuDropdown.style.display = 'none';
-            }
-        });
+    window.addEventListener('click', (e) => {
+        if (!menuButton.contains(e.target) && !menuDropdown.contains(e.target)) {
+            menuDropdown.style.display = 'none';
+        }
+    });
 
-        // Лайк поста
-        document.querySelectorAll('.like-button').forEach(button => {
-            button.addEventListener('click', (event) => {
-                const postId = button.getAttribute('data-post-id');
-                fetch(`like.php?id=${postId}`)
-                    .then(response => response.json())
-                    .then(data => alert(data.message || 'Пост понравился!'))
-                    .catch(err => console.error('Ошибка:', err));
-            });
-        });
-
-        // Отправка комментариев
-        document.querySelectorAll('.submit-comment').forEach(button => {
-            button.addEventListener('click', () => {
-                const postId = button.getAttribute('data-post-id');
-                const commentText = document.getElementById(`comment-text-${postId}`).value;
-
-                if (commentText.trim() === "") {
-                    alert("Пожалуйста, напишите комментарий.");
-                    return;
-                }
-
-                fetch(`add_comment.php`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `post_id=${postId}&comment=${encodeURIComponent(commentText)}`
-                })
+    // Лайк поста
+    document.querySelectorAll('.like-button').forEach(button => {
+        button.addEventListener('click', (event) => {
+            const postId = button.getAttribute('data-post-id');
+            fetch(`like.php?id=${postId}`)
                 .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        document.getElementById(`comment-text-${postId}`).value = "";
-                        loadComments(postId);
-                    } else {
-                        alert("Ошибка при добавлении комментария.");
-                    }
-                })
+                .then(data => alert(data.message || 'Пост понравился!'))
                 .catch(err => console.error('Ошибка:', err));
-            });
         });
+    });
 
-        // Загрузка комментариев
-        function loadComments(postId) {
-            fetch(`get_comments.php?post_id=${postId}`)
-                .then(response => response.json())
-                .then(data => {
-                    const commentsList = document.getElementById(`comments-list-${postId}`);
-                    commentsList.innerHTML = "";
+    // Отправка комментариев
+document.querySelectorAll('.submit-comment').forEach(button => {
+    button.addEventListener('click', () => {
+        const postId = button.getAttribute('data-post-id');
+        const commentText = document.getElementById(`comment-text-${postId}`).value;
 
-                    if (data.comments && data.comments.length > 0) {
-                        data.comments.forEach(comment => {
-                            const commentItem = document.createElement("div");
-                            commentItem.classList.add("comment-item");
-                            commentItem.innerHTML = `\
-                                <p>${comment.text}</p>\
-                                <button class="like-comment" data-comment-id="${comment.id}">Лайк</button>\
-                                <button class="dislike-comment" data-comment-id="${comment.id}">Дизлайк</button>\
-                            `;
-                            commentsList.appendChild(commentItem);
-                        });
-                    } else {
-                        commentsList.innerHTML = "<p>Нет комментариев</p>";
-                    }
-                })
-                .catch(err => console.error('Ошибка:', err));
+        if (commentText.trim() === "") {
+            alert("Пожалуйста, напишите комментарий.");
+            return;
         }
 
-        // Загружаем комментарии при загрузке страницы
-        document.querySelectorAll('.post-container').forEach(post => {
-            const postId = post.querySelector('.comment-button').getAttribute('data-post-id');
-            loadComments(postId);
+        console.log("Отправка комментария:", { postId, commentText }); // Логируем данные перед отправкой
+
+        fetch(`add_comment.php`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `post_id=${postId}&comment=${encodeURIComponent(commentText)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Ответ от сервера:", data); // Логируем ответ от сервера
+            if (data.success) {
+                document.getElementById(`comment-text-${postId}`).value = "";
+                loadComments(postId);
+            } else {
+                alert("Ошибка при добавлении комментария.");
+            }
+        })
+        .catch(err => {
+            console.error('Ошибка при отправке комментария:', err);
+            alert("Ошибка при отправке комментария.");
         });
-// Показываем/скрываем форму для комментариев
-document.querySelectorAll('.comment-button').forEach(button => {
-    button.addEventListener('click', (event) => {
-        const postId = button.getAttribute('data-post-id');
-        const commentForm = document.getElementById(`comment-form-${postId}`);
-        commentForm.style.display = (commentForm.style.display === 'none' || commentForm.style.display === '') ? 'block' : 'none';
     });
 });
+    // Загрузка комментариев
+    function loadComments(postId) {
+        fetch(`get_comments.php?post_id=${postId}`)
+            .then(response => response.json())
+            .then(data => {
+                const commentsList = document.getElementById(`comments-list-${postId}`);
+                commentsList.innerHTML = "";  // Очистка текущего списка комментариев
 
-        // Обработчик для фильтрации
-        document.getElementById('filter-select').addEventListener('change', function () {
-            const filter = this.value;
-            window.location.href = `index.php?filter=${filter}&search=${encodeURIComponent(document.getElementById('search-input').value)}`;
-        });
+                if (data.success && data.comments && data.comments.length > 0) {
+                    data.comments.forEach(comment => {
+                        const commentItem = document.createElement("div");
+                        commentItem.classList.add("comment-item");
+                        commentItem.innerHTML = `
+                            <p>${comment.text}</p>
+                            <button class="like-comment" data-comment-id="${comment.id}">Лайк</button>
+                            <button class="dislike-comment" data-comment-id="${comment.id}">Дизлайк</button>
+                        `;
+                        commentsList.appendChild(commentItem);
+                    });
+                } else {
+                    commentsList.innerHTML = "<p>Нет комментариев.</p>";
+                }
+            })
+            .catch(err => {
+                console.error('Ошибка при загрузке комментариев:', err);
+                alert("Ошибка при загрузке комментариев.");
+            });
+    }
 
-        // Обработчик для поиска
-        document.getElementById('search-button').addEventListener('click', function () {
-            const searchValue = document.getElementById('search-input').value.trim();
-            const filterValue = document.getElementById('filter-select').value;
-            window.location.href = `index.php?search=${encodeURIComponent(searchValue)}&filter=${filterValue}`;
+    // Загружаем комментарии при загрузке страницы
+    document.querySelectorAll('.post-container').forEach(post => {
+        const postId = post.querySelector('.comment-button').getAttribute('data-post-id');
+        loadComments(postId);
+    });
+
+    // Показываем/скрываем форму для комментариев
+    document.querySelectorAll('.comment-button').forEach(button => {
+        button.addEventListener('click', (event) => {
+            const postId = button.getAttribute('data-post-id');
+            const commentForm = document.getElementById(`comment-form-${postId}`);
+            commentForm.style.display = (commentForm.style.display === 'none' || commentForm.style.display === '') ? 'block' : 'none';
         });
-    </script>
+    });
+
+    // Обработчик для фильтрации
+    document.getElementById('filter-select').addEventListener('change', function () {
+        const filter = this.value;
+        window.location.href = `index.php?filter=${filter}&search=${encodeURIComponent(document.getElementById('search-input').value)}`;
+    });
+
+    // Обработчик для поиска
+    document.getElementById('search-button').addEventListener('click', function () {
+        const searchValue = document.getElementById('search-input').value.trim();
+        const filterValue = document.getElementById('filter-select').value;
+        window.location.href = `index.php?search=${encodeURIComponent(searchValue)}&filter=${filterValue}`;
+    });
+</script>
 </body>
 </html>
