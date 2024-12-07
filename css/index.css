@@ -114,6 +114,63 @@ header h1 {
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
+/* Стили для поиска и фильтрации */
+#search-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#search-input {
+    padding: 5px;
+    margin-right: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+#search-button {
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#search-button:hover {
+    background-color: #45a049;
+}
+
+#filter-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#sort-select {
+    padding: 5px;
+    margin-right: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+#sort-button {
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#sort-button:hover {
+    background-color: #45a049;
+}
+
 /* Стили для постов */
 .post-container {
     display: flex;
@@ -171,7 +228,11 @@ header h1 {
     background-color: #3db774;
 }
 
-/* Стили для комментариев */
+/* Стили для скрытого поля комментариев */
+.comment-form {
+    margin-top: 15px;
+}
+
 .comment-form textarea {
     width: 100%;
     padding: 10px;
@@ -210,19 +271,9 @@ header h1 {
     color: #555;
 }
 
+/* Убираем лайки/дизлайки */
 .comments-list .comment-item button {
-    background-color: #3db774;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    font-size: 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-.comments-list .comment-item button:hover {
-    background-color: #2c8d48;
+    display: none;
 }
 
 /* Футер */
