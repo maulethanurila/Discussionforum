@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($_POST['username'])) {
         $new_username = trim($_POST['username']);
         $stmt = $conn->prepare("UPDATE users SET username = ? WHERE id = ?");
-        $stmt->execute([$new_username, $user_id]);
+        $stmt->execute([$new_username, $id]);
         $_SESSION['success'] = "Имя пользователя обновлено!";
         $user['username'] = $new_username; // Обновляем данные в массиве
     }

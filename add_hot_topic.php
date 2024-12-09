@@ -1,4 +1,13 @@
 <?php
+session_start();
+// Проверка, что пользователь авторизован
+if (!isset($_SESSION['user_id'])) {
+    die("Ошибка: Пользователь не авторизован.");
+}
+
+// Получаем ID пользователя из сессии
+$user_id = $_SESSION['user_id'];
+
 include 'includes/db.php';
 
 // Функция для изменения размера изображения
@@ -136,9 +145,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $stmt = $conn->prepare("
             INSERT INTO posts (title, content, image, file, video, user_id)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ");
-        $stmt->execute([$title, $content, $imagePath, $filePath, $videoPath, 1]); // user_id = 1 (замените на текущего пользователя)
+            VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$title, $content, $imagePath, $filePath, $videoPath, $_SESSION['user_id']]);
 
         echo "Горячая тема добавлена успешно!";
     } catch (PDOException $e) {

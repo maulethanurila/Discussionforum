@@ -39,9 +39,12 @@ $sql .= $orderBy;
 
 // Подготовка и выполнение запроса
 $stmt = $conn->prepare($sql);
+
+// Если есть поиск, привязываем параметр поиска
 if (!empty($search)) {
-    $stmt->bindValue(':search', "%$search%", PDO::PARAM_STR);
+    $stmt->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
 }
+
 $stmt->execute();
 ?>
 
@@ -60,9 +63,7 @@ $stmt->execute();
             <button id="menu-button">☰ Меню</button>
             <div id="menu-dropdown">
                 <a href="profile.php">Мой профиль</a>
-                <a href="likes.php">Лайки</a>
-                <a href="comments.php">Комментарии</a>
-                <a href="posts.php">Публикации</a>
+                <a href="post.php">Публикации</a>
                 <a href="logout.php">Выйти</a>
             </div>
         </div>
@@ -163,41 +164,42 @@ $stmt->execute();
     });
 
     // Отправка комментариев
-document.querySelectorAll('.submit-comment').forEach(button => {
-    button.addEventListener('click', () => {
-        const postId = button.getAttribute('data-post-id');
-        const commentText = document.getElementById(`comment-text-${postId}`).value;
+    document.querySelectorAll('.submit-comment').forEach(button => {
+        button.addEventListener('click', () => {
+            const postId = button.getAttribute('data-post-id');
+            const commentText = document.getElementById(`comment-text-${postId}`).value;
 
-        if (commentText.trim() === "") {
-            alert("Пожалуйста, напишите комментарий.");
-            return;
-        }
-
-        console.log("Отправка комментария:", { postId, commentText }); // Логируем данные перед отправкой
-
-        fetch(`add_comment.php`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `post_id=${postId}&comment=${encodeURIComponent(commentText)}`
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Ответ от сервера:", data); // Логируем ответ от сервера
-            if (data.success) {
-                document.getElementById(`comment-text-${postId}`).value = "";
-                loadComments(postId);
-            } else {
-                alert("Ошибка при добавлении комментария.");
+            if (commentText.trim() === "") {
+                alert("Пожалуйста, напишите комментарий.");
+                return;
             }
-        })
-        .catch(err => {
-            console.error('Ошибка при отправке комментария:', err);
-            alert("Ошибка при отправке комментария.");
+
+            console.log("Отправка комментария:", { postId, commentText }); // Логируем данные перед отправкой
+
+            fetch(`add_comment.php`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `post_id=${postId}&comment=${encodeURIComponent(commentText)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Ответ от сервера:", data); // Логируем ответ от сервера
+                if (data.success) {
+                    document.getElementById(`comment-text-${postId}`).value = "";
+                    loadComments(postId);
+                } else {
+                    alert("Ошибка при добавлении комментария.");
+                }
+            })
+            .catch(err => {
+                console.error('Ошибка при отправке комментария:', err);
+                alert("Ошибка при отправке комментария.");
+            });
         });
     });
-});
+
     // Загрузка комментариев
     function loadComments(postId) {
         fetch(`get_comments.php?post_id=${postId}`)
@@ -254,6 +256,17 @@ document.querySelectorAll('.submit-comment').forEach(button => {
         const filterValue = document.getElementById('filter-select').value;
         window.location.href = `index.php?search=${encodeURIComponent(searchValue)}&filter=${filterValue}`;
     });
-</script>
+    // Добавить обработчик для кнопки "Поделиться"
+document.querySelectorAll('.share-button').forEach(button => {
+    button.addEventListener('click', () => {
+        const postId = button.getAttribute('data-post-id');
+        const postUrl = `${window.location.origin}/post.php?id=${postId}`;
+        navigator.clipboard.writeText(postUrl)
+            .then(() => alert('Ссылка скопирована!'))
+            .catch(err => console.error('Ошибка копирования:', err));
+    });
+});
+
+    </script>
 </body>
 </html>
